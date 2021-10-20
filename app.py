@@ -59,10 +59,38 @@ def adiciona_livro():
 
         db.session.add(livro)
         db.session.commit()
-        return gera_response(201, "book", livro.to_json(), "Livro adicionado com sucesso!")
+        return gera_response(201, "livro", livro.to_json(), "Livro adicionado com sucesso!")
     except Exception as e:
         print(e)
         return gera_response(400, "error", { "statusCode": "400", "message": "Erro ao tentar adicionar um novo livro"}, "Erro ao tentar adicionar um novo livro")
+
+@app.route('/livro/update/<id>', methods=['PUT'])
+def atualiza_livro(id):
+    livro = Book.query.filter_by(id=id).first()
+    body = request.get_json()
+
+    try:
+        if 'titulo' in body:
+            livro.titulo = body['titulo']
+
+        if 'autor' in body:
+            livro.autor = body['autor']
+
+        if 'paginas' in body:
+            livro.paginas = body['paginas']
+
+        if 'preco' in body:
+            livro.preco = body['preco']
+
+        if 'anoLancamento' in body:
+            livro.anoLancamento = body['anoLancamento']
+
+        db.session.add(livro)
+        db.session.commit()
+        return gera_response(200, "livro",livro.to_json(), "Livro atualizado com sucesso!")
+    except Exception as e:
+        print(e)
+        return gera_response(400, "error", { "statusCode": "400", "message": "Erro ao tentar atualizar livro"}, "Erro ao tentar atualizar livro")
 
 def gera_response(status, nome_conteudo, conteudo, mensagem=False):
     body = {}
