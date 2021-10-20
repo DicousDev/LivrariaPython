@@ -13,7 +13,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://pricing:pricing@10.100.113
 db = SQLAlchemy(app)
 
 class Book(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     titulo = db.Column(db.String(50))
     autor = db.Column(db.String(100))
     paginas = db.Column(db.String(50))
@@ -43,6 +43,26 @@ def seleciona_livro(id):
     livro_json = livro.to_json()
 
     return gera_response(200, "livro", livro_json)
+
+@app.route('/livro/create', methods=['POST'])
+def adiciona_livro():
+    body = request.get_json()
+
+    try:
+        livro = Book(
+            titulo=body['titulo'].upper(),
+            autor=body['autor'].upper(),
+            paginas=body['paginas'],
+            preco=body['preco'],
+            anoLancamento=body['anoLancamento']
+        )
+
+        db.session.add(livro)
+        db.session.commit()
+        return gera_response(201, "book", livro.to_json(), "Livro adicionado com sucesso!")
+    except Exception as e:
+        print(e)
+        return gera_response(400, "error", { "statusCode": "400", "message": "Erro ao tentar adicionar um novo livro"}, "Erro ao tentar adicionar um novo livro")
 
 def gera_response(status, nome_conteudo, conteudo, mensagem=False):
     body = {}
