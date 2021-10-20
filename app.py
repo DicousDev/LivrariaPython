@@ -62,7 +62,7 @@ def adiciona_livro():
         return gera_response(201, "livro", livro.to_json(), "Livro adicionado com sucesso!")
     except Exception as e:
         print(e)
-        return gera_response(400, "error", { "statusCode": "400", "message": "Erro ao tentar adicionar um novo livro"}, "Erro ao tentar adicionar um novo livro")
+        return gera_response(400, "error", { "statusCode": "400", "message": "Erro ao tentar adicionar um novo livro"}, "Erro ao tentar adicionar um novo livro ao banco de dados")
 
 @app.route('/livro/update/<id>', methods=['PUT'])
 def atualiza_livro(id):
@@ -87,10 +87,21 @@ def atualiza_livro(id):
 
         db.session.add(livro)
         db.session.commit()
-        return gera_response(200, "livro",livro.to_json(), "Livro atualizado com sucesso!")
+        return gera_response(200, "livro", livro.to_json(), "Livro atualizado com sucesso!")
     except Exception as e:
         print(e)
-        return gera_response(400, "error", { "statusCode": "400", "message": "Erro ao tentar atualizar livro"}, "Erro ao tentar atualizar livro")
+        return gera_response(400, "error", { "statusCode": "400", "message": "Erro ao tentar atualizar livro"}, "Erro ao tentar atualizar livro do banco de dados")
+
+@app.route('/deletarLivro/<id>', methods=['DELETE'])
+def deletar_livro(id):
+    livro = Book.query.filter_by(id=id).first()
+
+    try:
+        db.session.delete(livro)
+        db.session.commit()
+        return gera_response(200, "livro", livro.to_json(), "Livro deletado com sucesso!")
+    except:
+        return gera_response(400, "error", { "statusCode": "400", "message": "Erro ao tentar deletar livro"}, "Erro ao tentar deletar livro do banco de dados")
 
 def gera_response(status, nome_conteudo, conteudo, mensagem=False):
     body = {}
@@ -100,6 +111,5 @@ def gera_response(status, nome_conteudo, conteudo, mensagem=False):
         body['mensagem'] = mensagem
     
     return Response(json.dumps(body), status=status, mimetype="application/json")
-
 
 app.run()
