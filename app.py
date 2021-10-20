@@ -35,8 +35,14 @@ def seleciona_livros():
     livros = Book.query.all()
     livros_json = [livro.to_json() for livro in livros]
 
-    return Response(json.dumps(livros_json))
+    return gera_response(200, "livros", livros_json)
 
+@app.route('/livro/<id>', methods=['GET'])
+def seleciona_livro(id):
+    livro = Book.query.filter_by(id=id).first()
+    livro_json = livro.to_json()
+
+    return gera_response(200, "livro", livro_json)
 
 def gera_response(status, nome_conteudo, conteudo, mensagem=False):
     body = {}
@@ -45,7 +51,7 @@ def gera_response(status, nome_conteudo, conteudo, mensagem=False):
     if mensagem:
         body['mensagem'] = mensagem
     
-    return Response(json.dumps(body))
+    return Response(json.dumps(body), status=status, mimetype="application/json")
 
 
 app.run()
