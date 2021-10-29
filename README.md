@@ -1,4 +1,4 @@
-## MINI CRUD DE LIVROS
+## CRUD DE LIVROS
 
 API Desenvolvida em Python com Flask para fins de estudo.
 
